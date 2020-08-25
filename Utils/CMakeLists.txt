@@ -1,10 +1,3 @@
-include(GetGitRevisionDescription)
-get_git_head_revision(GIT_REFSPEC GIT_SHA1)
-git_local_changes(GIT_LOCAL_CHANGES)
-if (${GIT_LOCAL_CHANGES} STREQUAL "DIRTY")
-	set(COMPILER_MESSAGE "#pragma WARNING(Local changes not committed.)")
-endif()
-configure_file("${PROJECT_PATH}/Utils/Version.h.in" "${PROJECT_PATH}/Utils/Version.h" @ONLY)
 
 add_library(Utils
 		FileSystem.h
@@ -32,13 +25,20 @@ add_library(Utils
 ############################################################
 # GenericParameters
 ############################################################
-include_directories(${GenericParameters_INCLUDE_DIR})
-if(TARGET Ext_GenericParameters)
-	add_dependencies(Utils Ext_GenericParameters)
-endif()
+add_dependencies(Utils Ext_GenericParameters)
+
+target_include_directories(Utils
+	PUBLIC
+		${GenericParameters_INCLUDE_DIR}
+)
 
 find_package( Eigen3 REQUIRED )
-include_directories( ${EIGEN3_INCLUDE_DIR} )
+
+target_link_libraries(Utils
+	PUBLIC
+		PositionBasedDynamics
+		Eigen3::Eigen
+)
 
 install(TARGETS Utils
         RUNTIME DESTINATION bin

@@ -21,8 +21,14 @@ add_library(PositionBasedDynamics
 
 find_package(Eigen3 REQUIRED)
 
-target_include_directories(PositionBasedDynamics PRIVATE ${PROJECT_SOURCE_DIR})
-target_link_libraries(PositionBasedDynamics PRIVATE Eigen3::Eigen)
+target_include_directories(PositionBasedDynamics
+	PUBLIC
+		${PROJECT_SOURCE_DIR}
+)
+target_link_libraries(PositionBasedDynamics
+	PUBLIC
+		Eigen3::Eigen
+)
 
 
 

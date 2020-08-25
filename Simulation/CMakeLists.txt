@@ -32,7 +32,7 @@ add_library(Simulation
 		TimeStepController.h
 		TriangleModel.cpp
 		TriangleModel.h
-		
+
 		BoundingSphere.h
 		BoundingSphereHierarchy.cpp
 		BoundingSphereHierarchy.h
@@ -45,24 +45,27 @@ add_library(Simulation
 ############################################################
 # Discregrid
 ############################################################
-include_directories(${Discregrid_INCLUDE_DIR})
-if (TARGET Ext_Discregrid)
-	add_dependencies(Simulation Ext_Discregrid)
-endif()
+add_dependencies(Simulation Ext_Discregrid)
 
 
 ############################################################
 # GenericParameters
 ############################################################
-include_directories(${GenericParameters_INCLUDE_DIR})
-if(TARGET Ext_GenericParameters)
-	add_dependencies(Simulation Ext_GenericParameters)
-endif()
+add_dependencies(Simulation Ext_GenericParameters)
+
+target_include_directories(Simulation
+	PUBLIC
+		${GenericParameters_INCLUDE_DIR}
+		${Discregrid_INCLUDE_DIR}
+)
 
 find_package( Eigen3 REQUIRED )
-include_directories( ${EIGEN3_INCLUDE_DIR} )
 
-target_link_libraries(Simulation PositionBasedDynamics)
+target_link_libraries(Simulation
+	PUBLIC
+		PositionBasedDynamics
+		Utils
+)
 
 
 install(TARGETS Simulation
