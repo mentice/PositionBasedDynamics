@@ -15,15 +15,15 @@ namespace PBD
 
 	class Constraint
 	{
-	public: 
+	public:
 		unsigned int m_numberOfBodies;
 		/** indices of the linked bodies */
 		unsigned int *m_bodies;
 
-		Constraint(const unsigned int numberOfBodies) 
+		Constraint(const unsigned int numberOfBodies)
 		{
-			m_numberOfBodies = numberOfBodies; 
-			m_bodies = new unsigned int[numberOfBodies]; 
+			m_numberOfBodies = numberOfBodies;
+			m_bodies = new unsigned int[numberOfBodies];
 		}
 
 		virtual ~Constraint() { delete[] m_bodies; };
@@ -47,7 +47,7 @@ namespace PBD
 		bool initConstraint(SimulationModel &model, const unsigned int rbIndex1, const unsigned int rbIndex2, const Vector3r &pos);
 		virtual bool updateConstraint(SimulationModel &model);
 		virtual bool solvePositionConstraint(SimulationModel &model, const unsigned int iter);
-	};	
+	};
 
 	class BallOnLineJoint : public Constraint
 	{
@@ -55,14 +55,14 @@ namespace PBD
 		static int TYPE_ID;
 		Eigen::Matrix<Real, 3, 10, Eigen::DontAlign> m_jointInfo;
 
-		BallOnLineJoint() : Constraint(2) {} 
+		BallOnLineJoint() : Constraint(2) {}
 		virtual int &getTypeId() const { return TYPE_ID; }
 
 		bool initConstraint(SimulationModel &model, const unsigned int rbIndex1, const unsigned int rbIndex2, const Vector3r &pos, const Vector3r &dir);
 		virtual bool updateConstraint(SimulationModel &model);
 		virtual bool solvePositionConstraint(SimulationModel &model, const unsigned int iter);
 	};
- 
+
 	class HingeJoint : public Constraint
 	{
 	public:
@@ -76,7 +76,7 @@ namespace PBD
 		virtual bool updateConstraint(SimulationModel &model);
 		virtual bool solvePositionConstraint(SimulationModel &model, const unsigned int iter);
 	};
- 
+
 	class UniversalJoint : public Constraint
 	{
 	public:
@@ -162,8 +162,8 @@ namespace PBD
 		TargetAngleMotorHingeJoint() : MotorJoint() {}
 		virtual int &getTypeId() const { return TYPE_ID; }
 
-		virtual void setTarget(const Real val) 
-		{ 
+		virtual void setTarget(const Real val)
+		{
 			const Real pi = (Real)M_PI;
 			m_target = std::max(val, -pi);
 			m_target = std::min(m_target, pi);
@@ -205,7 +205,7 @@ namespace PBD
 		virtual bool updateConstraint(SimulationModel &model);
 		virtual bool solvePositionConstraint(SimulationModel &model, const unsigned int iter);
 	};
- 
+
 	class RigidBodyParticleBallJoint : public Constraint
 	{
 	public:
@@ -251,7 +251,7 @@ namespace PBD
 		virtual bool updateConstraint(SimulationModel &model);
 		virtual bool solvePositionConstraint(SimulationModel &model, const unsigned int iter);
 	};
- 
+
 	class DistanceConstraint : public Constraint
 	{
 	public:
@@ -278,7 +278,7 @@ namespace PBD
 									const unsigned int particle3, const unsigned int particle4);
 		virtual bool solvePositionConstraint(SimulationModel &model, const unsigned int iter);
 	};
-	
+
 	class IsometricBendingConstraint : public Constraint
 	{
 	public:
@@ -385,9 +385,9 @@ namespace PBD
 			m_w = new Real[numberOfParticles];
 			m_numClusters = new unsigned int[numberOfParticles];
 		}
-		virtual ~ShapeMatchingConstraint() 
-		{ 
-			delete[] m_x; 
+		virtual ~ShapeMatchingConstraint()
+		{
+			delete[] m_x;
 			delete[] m_x0;
 			delete[] m_corr;
 			delete[] m_w;
@@ -399,13 +399,13 @@ namespace PBD
 		virtual bool solvePositionConstraint(SimulationModel &model, const unsigned int iter);
 	};
 
-	class RigidBodyContactConstraint 
+	class RigidBodyContactConstraint
 	{
 	public:
 		static int TYPE_ID;
 		/** indices of the linked bodies */
 		unsigned int m_bodies[2];
-		Real m_stiffness; 
+		Real m_stiffness;
 		Real m_frictionCoeff;
 		Real m_sum_impulses;
 		Eigen::Matrix<Real, 3, 5, Eigen::DontAlign> m_constraintInfo;
@@ -414,9 +414,9 @@ namespace PBD
 		~RigidBodyContactConstraint() {}
 		virtual int &getTypeId() const { return TYPE_ID; }
 
-		bool initConstraint(SimulationModel &model, const unsigned int rbIndex1, const unsigned int rbIndex2, 
-			const Vector3r &cp1, const Vector3r &cp2, 
-			const Vector3r &normal, const Real dist, 
+		bool initConstraint(SimulationModel &model, const unsigned int rbIndex1, const unsigned int rbIndex2,
+			const Vector3r &cp1, const Vector3r &cp2,
+			const Vector3r &normal, const Real dist,
 			const Real restitutionCoeff, const Real stiffness, const Real frictionCoeff);
 		virtual bool solveVelocityConstraint(SimulationModel &model, const unsigned int iter);
 	};
@@ -450,7 +450,7 @@ namespace PBD
 		/** indices of the linked bodies */
 		unsigned int m_bodies[2];
 		unsigned int m_solidIndex;
-		unsigned int m_tetIndex; 
+		unsigned int m_tetIndex;
 		Vector3r m_bary;
 		Real m_lambda;
 		Real m_frictionCoeff;
@@ -470,6 +470,19 @@ namespace PBD
 			const Real frictionCoeff);
 		virtual bool solvePositionConstraint(SimulationModel &model, const unsigned int iter);
 		virtual bool solveVelocityConstraint(SimulationModel &model, const unsigned int iter);
+	};
+
+	class StretchConstraint : public Constraint
+	{
+	public:
+		static int TYPE_ID;
+		Real m_restLength;
+
+		StretchConstraint() : Constraint(2) {}
+		virtual int &getTypeId() const { return TYPE_ID; }
+
+		virtual bool initConstraint(SimulationModel &model, const unsigned int particle1, const unsigned int particle2);
+		virtual bool solvePositionConstraint(SimulationModel &model, const unsigned int iter);
 	};
 
 	class StretchShearConstraint : public Constraint
@@ -512,7 +525,7 @@ namespace PBD
 		Vector3r m_stiffnessCoefficientK;
 		Vector3r m_stretchCompliance;
 		Vector3r m_bendingAndTorsionCompliance;
-		Vector6r m_lambdaSum;		
+		Vector6r m_lambdaSum;
 
 		StretchBendingTwistingConstraint() : Constraint(2){}
 
@@ -533,7 +546,7 @@ namespace PBD
 	class DirectPositionBasedSolverForStiffRodsConstraint : public Constraint
 	{
 		class RodSegmentImpl : public RodSegment
-		{			
+		{
 		public:
 			RodSegmentImpl(SimulationModel &model, unsigned int idx) :
 				m_model(model), m_segmentIdx(idx) {};
@@ -560,7 +573,7 @@ namespace PBD
 			Vector3r m_stiffnessCoefficientK;
 			Vector3r m_stretchCompliance;
 			Vector3r m_bendingAndTorsionCompliance;
-			
+
 			virtual unsigned int segmentIndex(unsigned int i){
 				if (i < static_cast<unsigned int>(m_segments.size()))
 					return m_segments[i];
@@ -597,13 +610,13 @@ namespace PBD
 		virtual bool solvePositionConstraint(SimulationModel &model, const unsigned int iter);
 
 	protected:
-		
+
 		/** root node */
 		Node *root;
 		/** intervals of constraints */
 		Interval *intervals;
 		/** number of intervals */
-		int numberOfIntervals;		
+		int numberOfIntervals;
 		/** list to process nodes with increasing row index in the system matrix H (from the leaves to the root) */
 		std::list <Node*> *forward;
 		/** list to process nodes starting with the highest row index to row index zero in the matrix H (from the root to the leaves) */

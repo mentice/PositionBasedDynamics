@@ -16,6 +16,21 @@ const int permutation[3][3] = {
 	2, 1, 0
 };
 
+bool PositionBasedCosseratRods::solve_StretchConstraint(
+	const Vector3r& p0, Real invMass0,
+	const Vector3r& p1, Real invMass1,
+	const Real stretchingKs,
+	const Real restLength,
+	Vector3r& corr0, Vector3r& corr1)
+{
+	Vector3r gamma = (p1 - p0)/restLength - (p1 - p0).normalized();
+	gamma /= (invMass1 + invMass0) / restLength + eps;
+	gamma *= stretchingKs;
+	corr0 = invMass0 * gamma;
+	corr1 = -invMass1 * gamma;
+	return true;
+}
+
 // ----------------------------------------------------------------------------------------------
 bool PositionBasedCosseratRods::solve_StretchShearConstraint(
 	const Vector3r& p0, Real invMass0,
@@ -110,7 +125,7 @@ bool PositionBasedElasticRods::solve_GhostPointEdgeDistanceConstraint(
 	const Vector3r& p0, Real invMass0,
 	const Vector3r& p1, Real invMass1,
 	const Vector3r& p2, Real invMass2,
-	const Real stiffness, 
+	const Real stiffness,
 	const Real ghostEdgeRestLength,
 	Vector3r& corr0, Vector3r&  corr1, Vector3r&  corr2)
 {
@@ -173,8 +188,8 @@ bool PositionBasedElasticRods::solve_DarbouxVectorConstraint(
 
 	Matrix3r constraint_jacobian[5];
 	computeDarbouxGradient(
-		darboux_vector, midEdgeLength, d0, d1, 
-		dajpi, dbjpi, 
+		darboux_vector, midEdgeLength, d0, d1,
+		dajpi, dbjpi,
 		//bendingAndTwistingKs,
 		constraint_jacobian[0],
 		constraint_jacobian[1],
@@ -223,9 +238,9 @@ bool PositionBasedElasticRods::solve_DarbouxVectorConstraint(
 
 // ----------------------------------------------------------------------------------------------
 bool PositionBasedElasticRods::computeMaterialFrame(
-	const Vector3r& p0, 
-	const Vector3r& p1, 
-	const Vector3r& p2, 
+	const Vector3r& p0,
+	const Vector3r& p1,
+	const Vector3r& p2,
 	Matrix3r& frame)
 {
 	frame.col(2) = (p1 - p0);
@@ -346,7 +361,7 @@ bool PositionBasedElasticRods::computeDarbouxGradient(
 	Real X = static_cast<Real>(1.0) + da.col(0).dot(db.col(0)) + da.col(1).dot(db.col(1)) + da.col(2).dot(db.col(2));
 	X = static_cast<Real>(2.0) / (length * X);
 
-	for (int c = 0; c < 3; ++c) 
+	for (int c = 0; c < 3; ++c)
 	{
 		const int i = permutation[c][0];
 		const int j = permutation[c][1];
@@ -362,7 +377,7 @@ bool PositionBasedElasticRods::computeDarbouxGradient(
 			tmp =   dajpi[k][0].transpose() * db.col(j);
 			term1 = term1 - tmp;
 			// second term
-			for (int n = 0; n < 3; ++n) 
+			for (int n = 0; n < 3; ++n)
 			{
 				tmp = dajpi[n][0].transpose() * db.col(n);
 				term2 = term2 + tmp;
@@ -382,16 +397,16 @@ bool PositionBasedElasticRods::computeDarbouxGradient(
 			// third term
 			tmp = dbjpi[j][0].transpose() * da.col(k);
 			term1 = term1 - tmp;
-			
+
 			tmp = dbjpi[k][0].transpose() * da.col(j);
 			term1 = term1 + tmp;
 
 			// second term
-			for (int n = 0; n < 3; ++n) 
+			for (int n = 0; n < 3; ++n)
 			{
 				tmp = dajpi[n][1].transpose() * db.col(n);
 				term2 = term2 + tmp;
-				
+
 				tmp = dbjpi[n][0].transpose() * da.col(n);
 				term2 = term2 + tmp;
 			}
@@ -403,14 +418,14 @@ bool PositionBasedElasticRods::computeDarbouxGradient(
 			Vector3r term1(0, 0, 0);
 			Vector3r term2(0, 0, 0);
 			Vector3r tmp(0, 0, 0);
-			
+
 			// first term
 			term1 = dbjpi[j][1].transpose() * da.col(k);
 			tmp =   dbjpi[k][1].transpose() * da.col(j);
 			term1 = term1 - tmp;
 
 			// second term
-			for (int n = 0; n < 3; ++n) 
+			for (int n = 0; n < 3; ++n)
 			{
 				tmp = dbjpi[n][1].transpose() * da.col(n);
 				term2 = term2 + tmp;
@@ -444,10 +459,10 @@ bool PositionBasedElasticRods::computeDarbouxGradient(
 			term1 = dbjpi[j][2].transpose() * da.col(k);
 			tmp = dbjpi[k][2].transpose() * da.col(j);
 			term1 -= tmp;
-			
+
 			// second term
-			for (int n = 0; n < 3; ++n) 
-			{	
+			for (int n = 0; n < 3; ++n)
+			{
 				tmp = dbjpi[n][2].transpose() * da.col(n);
 				term2 += tmp;
 			}
@@ -735,7 +750,7 @@ void PBD::DirectPositionBasedSolverForStiffRods::getMassMatrix(RodSegment *segme
 Real PBD::DirectPositionBasedSolverForStiffRods::factor(const int intervalIndex, const std::vector<RodConstraint*> &rodConstraints, std::vector<RodSegment*> & rodSegments, const Interval* &intervals, std::list <Node*> * forward, std::list <Node*> * backward, std::vector<Vector6r> & RHS, std::vector<Vector6r> & lambdaSums, std::vector<std::vector<Matrix3r>> & bendingAndTorsionJacobians)
 {
 	Real maxError(0.);
-	
+
 	// compute right hand side of linear equation system
 	for (size_t currentConstraintIndex = 0; currentConstraintIndex < rodConstraints.size(); ++currentConstraintIndex)
 	{
@@ -825,7 +840,7 @@ Real PBD::DirectPositionBasedSolverForStiffRods::factor(const int intervalIndex,
 		{
 			if (node->isconstraint)
 			{
-				//compute J 
+				//compute J
 				RodConstraint *constraint = (RodConstraint*)node->object;
 				RodSegment *segment = (RodSegment*)node->parent->object;
 
@@ -1007,21 +1022,21 @@ bool PBD::DirectPositionBasedSolverForStiffRods::solve(int intervalIndex, std::l
 }
 
 bool PBD::DirectPositionBasedSolverForStiffRods::init_DirectPositionBasedSolverForStiffRodsConstraint(
-	std::vector<RodConstraint*> &rodConstraints, 
-	std::vector<RodSegment*> & rodSegments, 
-	Interval* &intervals, 
-	int &numberOfIntervals, 
-	std::list <Node*> * &forward, 
-	std::list <Node*> * &backward, 
-	Node* &root, 
+	std::vector<RodConstraint*> &rodConstraints,
+	std::vector<RodSegment*> & rodSegments,
+	Interval* &intervals,
+	int &numberOfIntervals,
+	std::list <Node*> * &forward,
+	std::list <Node*> * &backward,
+	Node* &root,
 	const std::vector<Vector3r> &constraintPositions,
 	const std::vector<Real> &averageRadii,
 	const std::vector<Real> &youngsModuli,
-	const std::vector<Real> &torsionModuli, 
-	std::vector<Vector6r> & RHS, 
-	std::vector<Vector6r> & lambdaSums, 
-	std::vector<std::vector<Matrix3r>> & bendingAndTorsionJacobians, 
-	std::vector<Vector3r> & corr_x, 
+	const std::vector<Real> &torsionModuli,
+	std::vector<Vector6r> & RHS,
+	std::vector<Vector6r> & lambdaSums,
+	std::vector<std::vector<Matrix3r>> & bendingAndTorsionJacobians,
+	std::vector<Vector3r> & corr_x,
 	std::vector<Quaternionr> & corr_q
 	)
 {
@@ -1038,7 +1053,7 @@ bool PBD::DirectPositionBasedSolverForStiffRods::init_DirectPositionBasedSolverF
 			youngsModuli[cIdx], torsionModuli[cIdx], constraint->getConstraintInfo(),
 			constraint->getStiffnessCoefficientK(), constraint->getRestDarbouxVector());
 	}
-	
+
 	// compute tree data structure for direct solver
 	initTree(rodConstraints, rodSegments, intervals, numberOfIntervals, forward, backward, root);
 
@@ -1108,16 +1123,16 @@ bool PBD::DirectPositionBasedSolverForStiffRods::update_DirectPositionBasedSolve
 
 
 bool PBD::DirectPositionBasedSolverForStiffRods::solve_DirectPositionBasedSolverForStiffRodsConstraint(
-	const std::vector<RodConstraint*> &rodConstraints, 
-	std::vector<RodSegment*> & rodSegments, 
-	const Interval* intervals, 
-	const int &numberOfIntervals, 
-	std::list <Node*> * forward, 
-	std::list <Node*> * backward, 
-	std::vector<Vector6r> & RHS, 
-	std::vector<Vector6r> & lambdaSums, 
-	std::vector<std::vector<Matrix3r>> & bendingAndTorsionJacobians, 
-	std::vector<Vector3r> & corr_x, 
+	const std::vector<RodConstraint*> &rodConstraints,
+	std::vector<RodSegment*> & rodSegments,
+	const Interval* intervals,
+	const int &numberOfIntervals,
+	std::list <Node*> * forward,
+	std::list <Node*> * backward,
+	std::vector<Vector6r> & RHS,
+	std::vector<Vector6r> & lambdaSums,
+	std::vector<std::vector<Matrix3r>> & bendingAndTorsionJacobians,
+	std::vector<Vector3r> & corr_x,
 	std::vector<Quaternionr> & corr_q
 	)
 {
@@ -1134,15 +1149,15 @@ bool PBD::DirectPositionBasedSolverForStiffRods::solve_DirectPositionBasedSolver
 }
 
 bool PBD::DirectPositionBasedSolverForStiffRods::init_StretchBendingTwistingConstraint(
-	const Vector3r &x0, const Quaternionr &q0, 
-	const Vector3r &x1, const Quaternionr &q1, 
-	const Vector3r &constraintPosition, 
-	const Real averageRadius, 
-	const Real averageSegmentLength, 
-	const Real youngsModulus, 
-	const Real torsionModulus, 
-	Eigen::Matrix<Real, 3, 4, Eigen::DontAlign> &constraintInfo, 
-	Vector3r &stiffnessCoefficientK, 
+	const Vector3r &x0, const Quaternionr &q0,
+	const Vector3r &x1, const Quaternionr &q1,
+	const Vector3r &constraintPosition,
+	const Real averageRadius,
+	const Real averageSegmentLength,
+	const Real youngsModulus,
+	const Real torsionModulus,
+	Eigen::Matrix<Real, 3, 4, Eigen::DontAlign> &constraintInfo,
+	Vector3r &stiffnessCoefficientK,
 	Vector3r &restDarbouxVector
 	)
 {
@@ -1205,8 +1220,8 @@ bool PBD::DirectPositionBasedSolverForStiffRods::initBeforeProjection_StretchBen
 }
 
 bool PBD::DirectPositionBasedSolverForStiffRods::update_StretchBendingTwistingConstraint(
-	const Vector3r &x0, const Quaternionr &q0, 
-	const Vector3r &x1, const Quaternionr &q1, 
+	const Vector3r &x0, const Quaternionr &q0,
+	const Vector3r &x1, const Quaternionr &q1,
 	Eigen::Matrix<Real, 3, 4, Eigen::DontAlign> &constraintInfo
 	)
 {
@@ -1234,13 +1249,13 @@ bool PBD::DirectPositionBasedSolverForStiffRods::solve_StretchBendingTwistingCon
 	const Vector3r &x1,
 	const Matrix3r &inertiaInverseW1,
 	const Quaternionr &q1,
-	const Vector3r &restDarbouxVector, 
-	const Real averageSegmentLength, 
-	const Vector3r &stretchCompliance, 
-	const Vector3r &bendingAndTorsionCompliance, 
+	const Vector3r &restDarbouxVector,
+	const Real averageSegmentLength,
+	const Vector3r &stretchCompliance,
+	const Vector3r &bendingAndTorsionCompliance,
 	const Eigen::Matrix<Real, 3, 4, Eigen::DontAlign> &constraintInfo,
-	Vector3r &corr_x0, Quaternionr &corr_q0, 
-	Vector3r &corr_x1, Quaternionr &corr_q1, 
+	Vector3r &corr_x0, Quaternionr &corr_q0,
+	Vector3r &corr_x1, Quaternionr &corr_q1,
 	Vector6r &lambdaSum
 	)
 {
@@ -1329,7 +1344,7 @@ bool PBD::DirectPositionBasedSolverForStiffRods::solve_StretchBendingTwistingCon
 	JMJT(3, 3) += bendingAndTorsionCompliance(0);
 	JMJT(4, 4) += bendingAndTorsionCompliance(1);
 	JMJT(5, 5) += bendingAndTorsionCompliance(2);
-	
+
 	// solve linear equation system (Equation 19)
 	auto decomposition(JMJT.ldlt());
 	Vector6r deltaLambda(decomposition.solve(rhs));

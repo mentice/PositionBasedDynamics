@@ -42,6 +42,7 @@ int StretchShearConstraint::TYPE_ID = IDFactory::getId();
 int BendTwistConstraint::TYPE_ID = IDFactory::getId();
 int StretchBendingTwistingConstraint::TYPE_ID = IDFactory::getId();
 int DirectPositionBasedSolverForStiffRodsConstraint::TYPE_ID = IDFactory::getId();
+int StretchConstraint::TYPE_ID = IDFactory::getId();
 
 //////////////////////////////////////////////////////////////////////////
 // BallJoint
@@ -804,7 +805,7 @@ bool TargetVelocityMotorHingeJoint::solveVelocityConstraint(SimulationModel &mod
 		rb2.getVelocity(),
 		rb2.getInertiaTensorInverseW(),
 		rb2.getAngularVelocity(),
-		m_target, 
+		m_target,
 		m_jointInfo,
 		corr_v1,
 		corr_omega1,
@@ -1000,7 +1001,7 @@ bool RigidBodySpring::initConstraint(SimulationModel &model, const unsigned int 
 		rb2.getPosition(),
 		rb2.getRotation(),
 		pos1,
-		pos2, 
+		pos2,
 		m_jointInfo);
 }
 
@@ -1040,7 +1041,7 @@ bool RigidBodySpring::solvePositionConstraint(SimulationModel &model, const unsi
 		rb2.getPosition(),
 		rb2.getInertiaTensorInverseW(),
 		rb2.getRotation(),
-		m_stiffness, 
+		m_stiffness,
 		m_restLength,
 		dt,
 		m_jointInfo,
@@ -1351,7 +1352,7 @@ bool FEMTriangleConstraint::initConstraint(SimulationModel &model, const unsigne
 	m_bodies[0] = particle1;
 	m_bodies[1] = particle2;
 	m_bodies[2] = particle3;
-	
+
 	ParticleData &pd = model.getParticles();
 
 	Vector3r &x1 = pd.getPosition0(particle1);
@@ -1376,7 +1377,7 @@ bool FEMTriangleConstraint::solvePositionConstraint(SimulationModel &model, cons
 	const Real invMass1 = pd.getInvMass(i1);
 	const Real invMass2 = pd.getInvMass(i2);
 	const Real invMass3 = pd.getInvMass(i3);
-	
+
 	Vector3r corr1, corr2, corr3;
 	const bool res = PositionBasedDynamics::solve_FEMTriangleConstraint(
 		x1, invMass1,
@@ -1683,7 +1684,7 @@ bool StrainTetConstraint::solvePositionConstraint(SimulationModel &model, const 
 //////////////////////////////////////////////////////////////////////////
 // ShapeMatchingConstraint
 //////////////////////////////////////////////////////////////////////////
-bool ShapeMatchingConstraint::initConstraint(SimulationModel &model, 
+bool ShapeMatchingConstraint::initConstraint(SimulationModel &model,
 			const unsigned int particleIndices[], const unsigned int numClusters[])
 {
 	ParticleData &pd = model.getParticles();
@@ -1717,8 +1718,8 @@ bool ShapeMatchingConstraint::solvePositionConstraint(SimulationModel &model, co
 	{
 		for (unsigned int i = 0; i < m_numberOfBodies; i++)
 		{
-			// Important: Divide position correction by the number of clusters 
-			// which contain the vertex. 
+			// Important: Divide position correction by the number of clusters
+			// which contain the vertex.
 			if (m_w[i] != 0.0)
 				pd.getPosition(m_bodies[i]) += (1.0 / m_numClusters[i]) * m_corr[i];
 		}
@@ -1759,7 +1760,7 @@ bool RigidBodyContactConstraint::initConstraint(SimulationModel &model, const un
 		rb2.getInertiaTensorInverseW(),
 		rb2.getRotation(),
 		rb2.getAngularVelocity(),
-		cp1, cp2, normal, restitutionCoeff, 
+		cp1, cp2, normal, restitutionCoeff,
 		m_constraintInfo);
 }
 
@@ -1811,7 +1812,7 @@ bool RigidBodyContactConstraint::solveVelocityConstraint(SimulationModel &model,
 //////////////////////////////////////////////////////////////////////////
 // ParticleRigidBodyContactConstraint
 //////////////////////////////////////////////////////////////////////////
-bool ParticleRigidBodyContactConstraint::initConstraint(SimulationModel &model, 
+bool ParticleRigidBodyContactConstraint::initConstraint(SimulationModel &model,
 	const unsigned int particleIndex, const unsigned int rbIndex,
 	const Vector3r &cp1, const Vector3r &cp2,
 	const Vector3r &normal, const Real dist,
@@ -1838,7 +1839,7 @@ bool ParticleRigidBodyContactConstraint::initConstraint(SimulationModel &model,
 		rb.getVelocity(),
 		rb.getInertiaTensorInverseW(),
 		rb.getRotation(),
-		rb.getAngularVelocity(),		
+		rb.getAngularVelocity(),
 		cp1, cp2, normal, restitutionCoeff,
 		m_constraintInfo);
 }
@@ -1865,8 +1866,8 @@ bool ParticleRigidBodyContactConstraint::solveVelocityConstraint(SimulationModel
 		m_frictionCoeff,
 		m_sum_impulses,
 		m_constraintInfo,
-		corr_v1,		
-		corr_v2, 
+		corr_v1,
+		corr_v2,
 		corr_omega2);
 
 	if (res)
@@ -1879,7 +1880,7 @@ bool ParticleRigidBodyContactConstraint::solveVelocityConstraint(SimulationModel
 		{
 			rb.getVelocity() += corr_v2;
 			rb.getAngularVelocity() += corr_omega2;
-		}	
+		}
 	}
 	return res;
 }
@@ -1927,7 +1928,7 @@ bool ParticleTetContactConstraint::initConstraint(SimulationModel &model,
 		m_invMasses,
 		m_x,
 		m_v,
-		bary, normal, 
+		bary, normal,
 		m_constraintInfo);
 }
 
@@ -2000,7 +2001,7 @@ bool ParticleTetContactConstraint::solveVelocityConstraint(SimulationModel &mode
  		m_invMasses,
  		m_x,
  		m_v,
-		m_bary, 
+		m_bary,
 		m_lambda,
  		m_frictionCoeff,
  		m_constraintInfo,
@@ -2019,6 +2020,52 @@ bool ParticleTetContactConstraint::solveVelocityConstraint(SimulationModel &mode
 			v2 += corr_v[2];
 		if (m_invMasses[3] != 0.0)
 			v3 += corr_v[3];
+	}
+	return res;
+}
+
+//////////////////////////////////////////////////////////////////////////
+// StretchConstraint
+//////////////////////////////////////////////////////////////////////////
+bool StretchConstraint::initConstraint(SimulationModel &model, const unsigned int particle1, const unsigned int particle2)
+{
+	m_bodies[0] = particle1;
+	m_bodies[1] = particle2;
+	ParticleData &pd = model.getParticles();
+
+	const Vector3r &x1_0 = pd.getPosition0(particle1);
+	const Vector3r &x2_0 = pd.getPosition0(particle2);
+
+	m_restLength = (x2_0 - x1_0).norm();
+
+	return true;
+}
+
+bool StretchConstraint::solvePositionConstraint(SimulationModel &model, const unsigned int iter)
+{
+	ParticleData &pd = model.getParticles();
+
+	const unsigned i1 = m_bodies[0];
+	const unsigned i2 = m_bodies[1];
+
+	Vector3r &x1 = pd.getPosition(i1);
+	Vector3r &x2 = pd.getPosition(i2);
+	const Real invMass1 = pd.getInvMass(i1);
+	const Real invMass2 = pd.getInvMass(i2);
+	Real stiffness(model.getRodStretchingStiffness());
+
+	Vector3r corr1, corr2;
+	const bool res = PositionBasedCosseratRods::solve_StretchConstraint(
+		x1, invMass1, x2, invMass2,
+		stiffness,
+		m_restLength, corr1, corr2);
+
+	if (res)
+	{
+		if (invMass1 != 0.0)
+			x1 += corr1;
+		if (invMass2 != 0.0)
+			x2 += corr2;
 	}
 	return res;
 }
@@ -2056,14 +2103,14 @@ bool StretchShearConstraint::solvePositionConstraint(SimulationModel &model, con
 	const Real invMass1 = pd.getInvMass(i1);
 	const Real invMass2 = pd.getInvMass(i2);
 	const Real invMassq1 = od.getInvMass(iq1);
-	Vector3r stiffness(model.getRodShearingStiffness1(), 
-					   model.getRodShearingStiffness2(), 
+	Vector3r stiffness(model.getRodShearingStiffness1(),
+					   model.getRodShearingStiffness2(),
 					   model.getRodStretchingStiffness());
 
 	Vector3r corr1, corr2;
 	Quaternionr corrq1;
 	const bool res = PositionBasedCosseratRods::solve_StretchShearConstraint(
-		x1, invMass1, x2, invMass2, q1, invMassq1, 
+		x1, invMass1, x2, invMass2, q1, invMassq1,
 		stiffness,
 		m_restLength, corr1, corr2, corrq1);
 
@@ -2115,13 +2162,13 @@ bool BendTwistConstraint::solvePositionConstraint(SimulationModel &model, const 
 	Quaternionr &q2 = od.getQuaternion(i2);
 	const Real invMass1 = od.getInvMass(i1);
 	const Real invMass2 = od.getInvMass(i2);
-	Vector3r stiffness(model.getRodBendingStiffness1(), 
-					   model.getRodBendingStiffness2(), 
+	Vector3r stiffness(model.getRodBendingStiffness1(),
+					   model.getRodBendingStiffness2(),
 					   model.getRodTwistingStiffness());
 
 	Quaternionr corr1, corr2;
 	const bool res = PositionBasedCosseratRods::solve_BendTwistConstraint(
-		q1, invMass1, q2, invMass2, 
+		q1, invMass1, q2, invMass2,
 		stiffness,
 		m_restDarbouxVector, corr1, corr2);
 
@@ -2132,7 +2179,7 @@ bool BendTwistConstraint::solvePositionConstraint(SimulationModel &model, const 
 			q1.coeffs() += corr1.coeffs();
 			q1.normalize();
 		}
-			
+
 		if (invMass2 != 0.0)
 		{
 			q2.coeffs() += corr2.coeffs();
@@ -2203,7 +2250,7 @@ bool StretchBendingTwistingConstraint::updateConstraint(SimulationModel &model)
 		segment1.getPosition(),
 		segment1.getRotation(),
 		segment2.getPosition(),
-		segment2.getRotation(),		
+		segment2.getRotation(),
 		m_constraintInfo);
 }
 
@@ -2295,8 +2342,8 @@ void DirectPositionBasedSolverForStiffRodsConstraint::deleteNodes()
 }
 
 bool PBD::DirectPositionBasedSolverForStiffRodsConstraint::initConstraint(
-	SimulationModel &model, 
-	const std::vector<std::pair<unsigned int, unsigned int>> & constraintSegmentIndices, 
+	SimulationModel &model,
+	const std::vector<std::pair<unsigned int, unsigned int>> & constraintSegmentIndices,
 	const std::vector<Vector3r> &constraintPositions,
 	const std::vector<Real> &averageRadii,
 	const std::vector<Real> &averageSegmentLengths,
@@ -2391,7 +2438,7 @@ bool PBD::DirectPositionBasedSolverForStiffRodsConstraint::solvePositionConstrai
 		m_rodConstraints, m_rodSegments, intervals, numberOfIntervals, forward, backward,
 		m_rightHandSide, m_lambdaSums, m_bendingAndTorsionJacobians, m_corr_x, m_corr_q
 		);
-	
+
 	// apply corrections to bodies
 	SimulationModel::RigidBodyVector &rbs = model.getRigidBodies();
 

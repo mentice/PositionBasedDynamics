@@ -409,8 +409,8 @@ bool SimulationModel::addDistanceJoint(const unsigned int rbIndex1, const unsign
 	return res;
 }
 
-bool SimulationModel::addRigidBodyContactConstraint(const unsigned int rbIndex1, const unsigned int rbIndex2, 
-	const Vector3r &cp1, const Vector3r &cp2, 
+bool SimulationModel::addRigidBodyContactConstraint(const unsigned int rbIndex1, const unsigned int rbIndex2,
+	const Vector3r &cp1, const Vector3r &cp2,
 	const Vector3r &normal, const Real dist,
 	const Real restitutionCoeff, const Real frictionCoeff)
 {
@@ -422,8 +422,8 @@ bool SimulationModel::addRigidBodyContactConstraint(const unsigned int rbIndex1,
 	return res;
 }
 
- bool SimulationModel::addParticleRigidBodyContactConstraint(const unsigned int particleIndex, const unsigned int rbIndex, 
- 	const Vector3r &cp1, const Vector3r &cp2, 
+ bool SimulationModel::addParticleRigidBodyContactConstraint(const unsigned int particleIndex, const unsigned int rbIndex,
+ 	const Vector3r &cp1, const Vector3r &cp2,
  	const Vector3r &normal, const Real dist,
  	const Real restitutionCoeff, const Real frictionCoeff)
 {
@@ -435,9 +435,9 @@ bool SimulationModel::addRigidBodyContactConstraint(const unsigned int rbIndex1,
  	return res;
 }
 
-bool SimulationModel::addParticleSolidContactConstraint(const unsigned int particleIndex, const unsigned int solidIndex, 
+bool SimulationModel::addParticleSolidContactConstraint(const unsigned int particleIndex, const unsigned int solidIndex,
 	const unsigned int tetIndex, const Vector3r &bary,
- 	const Vector3r &cp1, const Vector3r &cp2, 
+ 	const Vector3r &cp1, const Vector3r &cp2,
  	const Vector3r &normal, const Real dist,
  	const Real restitutionCoeff, const Real frictionCoeff)
 {
@@ -461,7 +461,7 @@ bool SimulationModel::addDistanceConstraint(const unsigned int particle1, const 
 	return res;
 }
 
-bool SimulationModel::addDihedralConstraint(const unsigned int particle1, const unsigned int particle2, 
+bool SimulationModel::addDihedralConstraint(const unsigned int particle1, const unsigned int particle2,
 											const unsigned int particle3, const unsigned int particle4)
 {
 	DihedralConstraint *c = new DihedralConstraint();
@@ -564,6 +564,19 @@ bool SimulationModel::addShapeMatchingConstraint(const unsigned int numberOfPart
 	return res;
 }
 
+
+bool SimulationModel::addStretchConstraint(const unsigned int particle1, const unsigned int particle2)
+{
+	StretchConstraint *c = new StretchConstraint();
+	const bool res = c->initConstraint(*this, particle1, particle2);
+	if (res)
+	{
+		m_constraints.push_back(c);
+		m_groupsInitialized = false;
+	}
+	return res;
+}
+
 bool SimulationModel::addStretchShearConstraint(const unsigned int particle1, const unsigned int particle2, const unsigned int quaternion1)
 {
 	StretchShearConstraint *c = new StretchShearConstraint();
@@ -629,11 +642,11 @@ bool PBD::SimulationModel::addDirectPositionBasedSolverForStiffRodsConstraint(
 }
 
 void SimulationModel::addTriangleModel(
-	const unsigned int nPoints, 
-	const unsigned int nFaces, 
+	const unsigned int nPoints,
+	const unsigned int nFaces,
 	Vector3r *points,
-	unsigned int* indices, 
-	const TriangleModel::ParticleMesh::UVIndices& uvIndices, 
+	unsigned int* indices,
+	const TriangleModel::ParticleMesh::UVIndices& uvIndices,
 	const TriangleModel::ParticleMesh::UVs& uvs)
 {
 	TriangleModel *triModel = new TriangleModel();

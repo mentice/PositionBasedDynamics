@@ -18,7 +18,7 @@ namespace PBD
 	//
 	//	Crispin Deul
 	//	Graduate School CE
-	//	Technische Universität Darmstadt
+	//	Technische Universitï¿½t Darmstadt
 	//
 	//  deul[at] gsc.tu-darmstadt.de
 	//
@@ -214,7 +214,7 @@ namespace PBD
 		//* @param bendingAndTorsionJacobians this vector is used to temporary
 		//* save the Jacobians of the bending and torsion part of each constraint
 		//* during the solution process of the system of equations. Allocating this
-		//* vector outside of the solve-method avoids repeated reallocation between iterations of the solver		
+		//* vector outside of the solve-method avoids repeated reallocation between iterations of the solver
 		//* @param corr_x vector of position corrections for every segment of the rod (part of delta-x in eq. 22 in the paper)
 		//* @param corr_q vector of rotation corrections for every segment of the rod (part of delta-x in eq. 22 in the paper)
 		//*/
@@ -250,7 +250,7 @@ namespace PBD
 		///** Initialize the constraint before the projection iterations in each time step. \n\n
 		//*
 		//* @param rodConstraints contains the combined zero-stretch, bending and torsion constraints of the rod.
-		//* @param inverseTimeStepSize inverse of the current time step size used to compute compliance (see computation of alpha-tilde in eq. 17)		
+		//* @param inverseTimeStepSize inverse of the current time step size used to compute compliance (see computation of alpha-tilde in eq. 17)
 		//* @param lambdaSums contains entries of the sum of all lambda updates for
 		//* each constraint in the rod during one time step which is needed by the solver to handle
 		//* compliance in the correct way (cf. the right hand side of eq. 22 in the paper).
@@ -274,7 +274,7 @@ namespace PBD
 		//* @param bendingAndTorsionJacobians this vector is used to temporary
 		//* save the Jacobians of the bending and torsion part of each constraint
 		//* during the solution process of the system of equations. Allocating this
-		//* vector outside of the solve-method avoids repeated reallocation between iterations of the solver		
+		//* vector outside of the solve-method avoids repeated reallocation between iterations of the solver
 		//* @param corr_x vector of position corrections for every segment of the rod (part of delta-x in eq. 22 in the paper)
 		//* @param corr_q vector of rotation corrections for every segment of the rod (part of delta-x in eq. 22 in the paper)
 		//*/
@@ -430,6 +430,25 @@ namespace PBD
 		* @param invMass0 inverse mass of first particle
 		* @param p1 position of second particle
 		* @param invMass1 inverse mass of second particle
+		* @param invMassq0 inverse mass of the quaternion
+		* @param stretchingKs stiffness coefficients for stretching and shearing
+		* @param restLength rest edge length
+		* @param corr0 position correction of first particle
+		* @param corr1 position correction of second particle
+		*/
+		static bool solve_StretchConstraint(
+			const Vector3r& p0, Real invMass0,
+			const Vector3r& p1, Real invMass1,
+			const Real stretchingKs,
+			const Real restLength,
+			Vector3r& corr0, Vector3r&  corr1);
+
+		/** Determine the position and orientation corrections for the stretch and shear constraint constraint (eq. 37 in the paper). \n\n
+		*
+		* @param p0 position of first particle
+		* @param invMass0 inverse mass of first particle
+		* @param p1 position of second particle
+		* @param invMass1 inverse mass of second particle
 		* @param q0 Quaternionr at the center of the edge
 		* @param invMassq0 inverse mass of the quaternion
 		* @param stretchingAndShearingKs stiffness coefficients for stretching and shearing
@@ -557,7 +576,7 @@ namespace PBD
 			const Real midEdgeLength,
 			const Vector3r& restDarbouxVector,
 			Vector3r& oa, Vector3r&  ob, Vector3r&  oc, Vector3r&  od, Vector3r& oe);
-		
+
 		/** Computes the material frame (eq. 3 in the paper)
 		*/
 		static bool computeMaterialFrame(
@@ -573,7 +592,7 @@ namespace PBD
 			const Matrix3r& dB, //2nd material frame
 			const Real mid_edge_length, //
 			Vector3r& darboux_vector); //resulting darboux vector
-		
+
 		/** Computes the material frame derivatives (eq. 43, 44 and 45 in the appendix)
 		*/
 		static bool computeMaterialFrameDerivative(
@@ -582,7 +601,7 @@ namespace PBD
 			Matrix3r& d1p0, Matrix3r& d1p1, Matrix3r& d1p2,  //resulting matrices
 			Matrix3r& d2p0, Matrix3r& d2p1, Matrix3r& d2p2,  //resulting matrices
 			Matrix3r& d3p0, Matrix3r& d3p1, Matrix3r& d3p2); //resulting matrices
-		
+
 		/** Compute the Darboux gradient in respect to each point (eq. 49-53 in the appendix)
 		*/
 		static bool computeDarbouxGradient(

@@ -10,8 +10,8 @@
 #include "LineModel.h"
 #include "ParameterObject.h"
 
-namespace PBD 
-{	
+namespace PBD
+{
 	class Constraint;
 
 	class SimulationModel : public GenParam::ParameterObject
@@ -91,7 +91,7 @@ namespace PBD
 			virtual void initParameters();
 
 	public:
-			void reset();			
+			void reset();
 			void cleanup();
 
 			RigidBodyVector &getRigidBodies();
@@ -118,8 +118,8 @@ namespace PBD
 				const TriangleModel::ParticleMesh::UVs& uvs);
 
 			void addTetModel(
-				const unsigned int nPoints, 
-				const unsigned int nTets, 
+				const unsigned int nPoints,
+				const unsigned int nTets,
 				Vector3r *points,
 				unsigned int* indices);
 
@@ -147,12 +147,12 @@ namespace PBD
 			bool addRigidBodySpring(const unsigned int rbIndex1, const unsigned int rbIndex2, const Vector3r &pos1, const Vector3r &pos2, const Real stiffness);
 			bool addDistanceJoint(const unsigned int rbIndex1, const unsigned int rbIndex2, const Vector3r &pos1, const Vector3r &pos2);
 			bool addDamperJoint(const unsigned int rbIndex1, const unsigned int rbIndex2, const Vector3r &axis, const Real stiffness);
-			bool addRigidBodyContactConstraint(const unsigned int rbIndex1, const unsigned int rbIndex2, 
-					const Vector3r &cp1, const Vector3r &cp2,	
-					const Vector3r &normal, const Real dist, 
+			bool addRigidBodyContactConstraint(const unsigned int rbIndex1, const unsigned int rbIndex2,
+					const Vector3r &cp1, const Vector3r &cp2,
+					const Vector3r &normal, const Real dist,
 					const Real restitutionCoeff, const Real frictionCoeff);
-			bool addParticleRigidBodyContactConstraint(const unsigned int particleIndex, const unsigned int rbIndex, 
-					const Vector3r &cp1, const Vector3r &cp2, 
+			bool addParticleRigidBodyContactConstraint(const unsigned int particleIndex, const unsigned int rbIndex,
+					const Vector3r &cp1, const Vector3r &cp2,
 					const Vector3r &normal, const Real dist,
 					const Real restitutionCoeff, const Real frictionCoeff);
 
@@ -176,6 +176,7 @@ namespace PBD
 			bool addStrainTetConstraint(const unsigned int particle1, const unsigned int particle2,
 									const unsigned int particle3, const unsigned int particle4);
 			bool addShapeMatchingConstraint(const unsigned int numberOfParticles, const unsigned int particleIndices[], const unsigned int numClusters[]);
+			bool addStretchConstraint(const unsigned int particle1, const unsigned int particle2);
 			bool addStretchShearConstraint(const unsigned int particle1, const unsigned int particle2, const unsigned int quaternion1);
 			bool addBendTwistConstraint(const unsigned int quaternion1, const unsigned int quaternion2);
 			bool addStretchBendingTwistingConstraint(const unsigned int rbIndex1, const unsigned int rbIndex2, const Vector3r &pos, const Real averageRadius, const Real averageSegmentLength, const Real youngsModulus, const Real torsionModulus);
@@ -185,7 +186,7 @@ namespace PBD
 			void setContactStiffnessRigidBody(Real val) { m_contactStiffnessRigidBody = val; }
 			Real getContactStiffnessParticleRigidBody() const { return m_contactStiffnessParticleRigidBody; }
 			void setContactStiffnessParticleRigidBody(Real val) { m_contactStiffnessParticleRigidBody = val; }
-		
+
 		    Real getRodStretchingStiffness() const { return m_rod_stretchingStiffness;  }
 			void setRodStretchingStiffness(Real val) { m_rod_stretchingStiffness = val; }
 			Real getRodShearingStiffness1() const { return m_rod_shearingStiffness1; }
