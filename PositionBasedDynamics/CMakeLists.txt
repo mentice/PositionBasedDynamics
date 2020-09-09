@@ -1,4 +1,5 @@
 add_library(PositionBasedDynamics
+		SHARED
 		${PROJECT_SOURCE_DIR}/Common/Common.h
 
 		DirectPositionBasedSolverForStiffRodsInterface.h
