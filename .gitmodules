@@ -1,0 +1,6 @@
+[submodule "extern/Discregrid"]
+	path = extern/Discregrid
+	url = https://github.com/InteractiveComputerGraphics/Discregrid.git
+[submodule "extern/GenericParameters"]
+	path = extern/GenericParameters
+	url = https://github.com/InteractiveComputerGraphics/GenericParameters.git

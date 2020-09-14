@@ -22,11 +22,6 @@ add_library(Utils
 		CMakeLists.txt
 )
 
-############################################################
-# GenericParameters
-############################################################
-add_dependencies(Utils Ext_GenericParameters)
-
 target_include_directories(Utils
 	PUBLIC
 		${GenericParameters_INCLUDE_DIR}
@@ -38,6 +33,7 @@ target_link_libraries(Utils
 	PUBLIC
 		PositionBasedDynamics
 		Eigen3::Eigen
+		GenericParameters
 )
 
 install(TARGETS Utils

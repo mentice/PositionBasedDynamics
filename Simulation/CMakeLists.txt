@@ -42,29 +42,14 @@ add_library(Simulation
 		CMakeLists.txt
 )
 
-############################################################
-# Discregrid
-############################################################
-add_dependencies(Simulation Ext_Discregrid)
-
-
-############################################################
-# GenericParameters
-############################################################
-add_dependencies(Simulation Ext_GenericParameters)
-
-target_include_directories(Simulation
-	PUBLIC
-		${GenericParameters_INCLUDE_DIR}
-		${Discregrid_INCLUDE_DIR}
-)
-
 find_package( Eigen3 REQUIRED )
 
 target_link_libraries(Simulation
 	PUBLIC
 		PositionBasedDynamics
 		Utils
+		Discregrid
+		GenericParameters
 )
 
 
